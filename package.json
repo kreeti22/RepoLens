@@ -1,0 +1,25 @@
+{
+  "name": "repolens",
+  "version": "1.0.0",
+  "description": "A full-stack, version-aware code search and retrieval engine featuring custom indexing, syntax-aware search, incremental GitHub synchronization, and scalable backend architecture.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kreeti22/RepoLens.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/kreeti22/RepoLens/issues"
+  },
+  "homepage": "https://github.com/kreeti22/RepoLens#readme",
+  "devDependencies": {
+    "@types/node": "^26.6.5",
+    "typescript": "^7.0.2"
+  }
+}
