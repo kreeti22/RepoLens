@@ -1,0 +1,42 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model practice_files {
+  id                    Int                   @id @default(autoincrement())
+  repository_id         Int
+  filename              String                @db.VarChar(255)
+  practice_repositories practice_repositories @relation(fields: [repository_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model practice_repositories {
+  id             Int              @id @default(autoincrement())
+  name           String           @db.VarChar(100)
+  owner          String           @db.VarChar(100)
+  file_count     Int?             @default(0)
+  practice_files practice_files[]
+}
+
+model Repository {
+  id    Int        @id @default(autoincrement())
+  owner String
+  name  String
+  files RepoFile[]
+
+  @@unique([owner, name])
+}
+
+model RepoFile {
+  id           Int        @id @default(autoincrement())
+  path         String
+  content      String     @db.Text
+  repositoryId Int
+  repository   Repository @relation(fields: [repositoryId], references: [id])
+
+  @@unique([repositoryId, path])
+}
