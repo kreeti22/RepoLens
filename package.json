@@ -4,7 +4,9 @@
   "description": "A full-stack, version-aware code search and retrieval engine featuring custom indexing, syntax-aware search, incremental GitHub synchronization, and scalable backend architecture.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js"
   },
   "repository": {
     "type": "git",
@@ -20,6 +22,11 @@
   "homepage": "https://github.com/kreeti22/RepoLens#readme",
   "devDependencies": {
     "@types/node": "^26.6.5",
+    "tsx": "^4.23.15",
     "typescript": "^7.0.2"
+  },
+  "dependencies": {
+    "dotenv": "^18.0.8",
+    "fastify": "^5.12.7"
   }
 }
