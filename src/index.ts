@@ -4,11 +4,13 @@ import { registerHealthRoutes } from "./routes/health.js";
 import { registerRepositoryRoutes } from "./routes/repositories.js";
 import { registerSearchRoutes } from "./routes/search.js";
 import { PORT } from "./config.js";
+import { registerGitHubRoutes } from "./routes/github.js";
 
 
 const app = Fastify();
 registerHealthRoutes(app);
 registerRepositoryRoutes(app);
+registerGitHubRoutes(app);
 registerSearchRoutes(app);
 
 app.get("/", async () => {
