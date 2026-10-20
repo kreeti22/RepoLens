@@ -40,6 +40,7 @@ export interface GitHubTreeEntry {
   path: string;
   type: "blob" | "tree";
   sha: string;
+  size?: number;
 }
 
 export interface GitHubTreeResponse {
