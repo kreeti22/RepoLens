@@ -2,6 +2,7 @@
 import type { FastifyInstance } from "fastify";
 import { getGitHubRepository } from "../github.js";
 import { prisma } from "../db.js";
+import { importRepositoryFiles } from "../import-files.js";
 
 export function registerGitHubRoutes(app: FastifyInstance) {
   app.get<{
@@ -70,5 +71,34 @@ app.post<{
     throw error;
   }
 });
+
+
+app.post<{
+  Params: { owner: string; name: string };
+}>("/github/import-files/:owner/:name", async (request, reply) => {
+  const { owner, name } = request.params;
+
+  try {
+    const result = await importRepositoryFiles(owner, name);
+
+    return reply.code(200).send({
+      message: "Source files imported successfully",
+      ...result
+    });
+
+  } catch (error) {
+    if (
+      error instanceof Error &&
+      error.message === "GitHub repository not found"
+    ) {
+      return reply.code(404).send({
+        message: "GitHub repository not found"
+      });
+    }
+
+    throw error;
+  }
+});
+
 
 }
