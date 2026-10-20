@@ -69,5 +69,33 @@ export async function getGitHubFiles(
 
   return data.tree.filter((entry) => entry.type === "blob");
 }
+  
+interface GitHubBlobResponse {
+  content: string;
+  encoding: string;
+}
+
+export async function getGitHubFileContent(
+  owner: string,
+  name: string,
+  sha: string
+): Promise<string> {
+  const url = `https://api.github.com/repos/${owner}/${name}/git/blobs/${sha}`;
+
+  const response = await fetch(url);
+
+  if (!response.ok) {
+    throw new Error(`GitHub blob request failed: ${response.status}`);
+  }
+
+  const data = (await response.json()) as GitHubBlobResponse;
+
+  if (data.encoding !== "base64") {
+    throw new Error("Unsupported file encoding");
+  }
+
+  return Buffer.from(data.content, "base64").toString("utf8");
+}
+
 
 
