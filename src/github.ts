@@ -18,9 +18,56 @@ export async function getGitHubRepository(
   const response = await fetch(url);
 
   if (!response.ok) {
-    throw new Error(`GitHub API failed: ${response.status}`);
+  if (response.status === 404) {
+    throw new Error("GitHub repository not found");
   }
+
+  if (
+    (response.status === 403 || response.status === 429) &&
+    response.headers.get("x-ratelimit-remaining") === "0"
+  ) {
+    throw new Error("GitHub API rate limit exceeded");
+  }
+
+  throw new Error(`GitHub API failed: ${response.status}`);
+}
 
   const repository = (await response.json()) as GitHubRepository;
   return repository;
 }
+
+export interface GitHubTreeEntry {
+  path: string;
+  type: "blob" | "tree";
+  sha: string;
+}
+
+export interface GitHubTreeResponse {
+  tree: GitHubTreeEntry[];
+  truncated: boolean;
+}
+
+
+export async function getGitHubFiles(
+  owner: string,
+  name: string,
+  branch: string
+): Promise<GitHubTreeEntry[]> {
+  const url = `https://api.github.com/repos/${owner}/${name}/git/trees/${encodeURIComponent(branch)}?recursive=1`;
+
+  const response = await fetch(url);
+
+  if (!response.ok) {
+    throw new Error(`GitHub tree request failed: ${response.status}`);
+  }
+
+  const data = (await response.json()) as GitHubTreeResponse;
+
+  if (data.truncated) {
+    throw new Error("GitHub returned an incomplete file tree");
+  }
+
+  return data.tree.filter((entry) => entry.type === "blob");
+}
+
+
