@@ -8,6 +8,8 @@ interface SearchResult {
   repositoryId: number;
   owner: string;
   name: string;
+  snippet: string;
+  score: number;
 }
 
 export function registerSearchRoutes(app: FastifyInstance) {
@@ -41,23 +43,44 @@ export function registerSearchRoutes(app: FastifyInstance) {
       ? Prisma.sql`AND r.owner = ${owner} AND r.name = ${name}`
       : Prisma.empty;
 
-    const results = await prisma.$queryRaw<SearchResult[]>(
-      Prisma.sql`
-        SELECT
-          f."path",
-          f."repositoryId",
-          r."owner",
-          r."name"
-        FROM "RepoFile" f
-        JOIN "Repository" r
-          ON f."repositoryId" = r.id
-        WHERE to_tsvector('simple', f."content")
-          @@ plainto_tsquery('simple', ${query})
-        ${repositoryFilter}
-        ORDER BY f."path"
-        LIMIT 20
-      `
-    );
+    
+
+const results = await prisma.$queryRaw<SearchResult[]>(
+  Prisma.sql`
+    SELECT
+      f."path",
+      f."repositoryId",
+      r."owner",
+      r."name",
+
+      ts_headline(
+        'simple',
+        f."content",
+        plainto_tsquery('simple', ${query}),
+        'MaxFragments=1, MaxWords=20, MinWords=5, StartSel=[[, StopSel=]]'
+      ) AS snippet,
+
+      ts_rank(
+        to_tsvector('simple', f."content"),
+        plainto_tsquery('simple', ${query})
+      ) AS score
+
+    FROM "RepoFile" f
+
+    JOIN "Repository" r
+      ON f."repositoryId" = r.id
+
+    WHERE to_tsvector('simple', f."content")
+      @@ plainto_tsquery('simple', ${query})
+
+    ${repositoryFilter}
+
+    ORDER BY score DESC, f."path" ASC
+    LIMIT 20
+  `
+);
+
+
 
     return {
       query,
