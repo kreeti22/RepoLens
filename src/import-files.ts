@@ -36,16 +36,42 @@ export async function importRepositoryFiles(
 
   const MAX_FILES = 10;
 let filesSaved = 0;
+const failedFiles: string[] = [];
+let stoppedEarly = false;
 
 const start = (batch - 1) * MAX_FILES;
 const end = start + MAX_FILES;
 
 for (const file of selectedFiles.slice(start, end)) {
-    const content = await getGitHubFileContent(
-      repoOwner,
-      repoName,
-      file.sha
-    );
+    
+let content: string;
+
+try {
+  content = await getGitHubFileContent(
+    repoOwner,
+    repoName,
+    file.sha
+  );
+} catch (error) {
+  const message = error instanceof Error
+    ? error.message
+    : String(error);
+
+  console.error(`Failed to fetch ${file.path}: ${message}`);
+
+  failedFiles.push(file.path);
+
+  if (
+    message.includes("GitHub blob request failed: 403") ||
+    message.includes("GitHub blob request failed: 429")
+  ) {
+    stoppedEarly = true;
+    break;
+  }
+
+  continue;
+}
+
 
     await prisma.repoFile.upsert({
       where: {
@@ -69,6 +95,9 @@ for (const file of selectedFiles.slice(start, end)) {
   batch,
   totalBatches: Math.ceil(selectedFiles.length / MAX_FILES),
   totalAvailable: selectedFiles.length,
-  filesSaved
+  filesSaved,
+  filesFailed: failedFiles.length,
+  failedFiles,
+  stoppedEarly
 };
 }
