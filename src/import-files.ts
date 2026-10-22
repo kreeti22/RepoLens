@@ -10,7 +10,8 @@ import { prisma } from "./db.js";
 
 export async function importRepositoryFiles(
   owner: string,
-  name: string
+  name: string,
+  batch: number = 1
 ) {
   const repo = await getGitHubRepository(owner, name);
 
@@ -36,7 +37,10 @@ export async function importRepositoryFiles(
   const MAX_FILES = 10;
 let filesSaved = 0;
 
-for (const file of selectedFiles.slice(0, MAX_FILES)) {
+const start = (batch - 1) * MAX_FILES;
+const end = start + MAX_FILES;
+
+for (const file of selectedFiles.slice(start, end)) {
     const content = await getGitHubFileContent(
       repoOwner,
       repoName,
@@ -62,6 +66,8 @@ for (const file of selectedFiles.slice(0, MAX_FILES)) {
 
   return {
   repository: repo.full_name,
+  batch,
+  totalBatches: Math.ceil(selectedFiles.length / MAX_FILES),
   totalAvailable: selectedFiles.length,
   filesSaved
 };

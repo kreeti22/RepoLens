@@ -34,11 +34,10 @@ app.post<{
 }>("/github/import/:owner/:name", async (request, reply) => {
   const { owner, name } = request.params;
 
+
   try {
-    // Fetch actual repository details from GitHub
     const githubRepo = await getGitHubRepository(owner, name);
 
-    // Save the repository in PostgreSQL
     const repository = await prisma.repository.upsert({
       where: {
         owner_name: {
@@ -75,11 +74,20 @@ app.post<{
 
 app.post<{
   Params: { owner: string; name: string };
+  Querystring: { batch?: string };
 }>("/github/import-files/:owner/:name", async (request, reply) => {
   const { owner, name } = request.params;
 
+  const batch = Number(request.query.batch ?? "1");
+
+  if (!Number.isSafeInteger(batch) || batch < 1) {
+    return reply.code(400).send({
+      message: "Batch must be a positive integer"
+    });
+  }
+
   try {
-    const result = await importRepositoryFiles(owner, name);
+    const result = await importRepositoryFiles(owner, name, batch);
 
     return reply.code(200).send({
       message: "Source files imported successfully",
