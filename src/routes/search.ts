@@ -18,11 +18,22 @@ export function registerSearchRoutes(app: FastifyInstance) {
       q?: string;
       owner?: string;
       name?: string;
+      page?: string;
     };
   }>("/search", async (request, reply) => {
     const query = request.query.q?.trim();
     const owner = request.query.owner?.trim();
     const name = request.query.name?.trim();
+    const page = Number(request.query.page ?? "1");
+const PAGE_SIZE = 10;
+
+if (!Number.isSafeInteger(page) || page < 1) {
+  return reply.code(400).send({
+    message: "Page must be a positive integer"
+  });
+}
+
+const offset = (page - 1) * PAGE_SIZE;
 
     if (!query) {
       return reply.code(400).send({
@@ -75,17 +86,20 @@ const results = await prisma.$queryRaw<SearchResult[]>(
 
     ${repositoryFilter}
 
-    ORDER BY score DESC, f."path" ASC
-    LIMIT 20
+    ORDER BY score DESC, f."path" ASC, f."repositoryId" ASC
+LIMIT ${PAGE_SIZE}
+OFFSET ${offset}
   `
 );
 
 
 
     return {
-      query,
-      totalResults: results.length,
-      results
-    };
+  query,
+  page,
+  pageSize: PAGE_SIZE,
+  totalResults: results.length,
+  results
+};
   });
 }
