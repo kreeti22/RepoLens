@@ -182,3 +182,25 @@
     border-right-color: var(--border);
   }
 }
+
+
+.result-card {
+  text-align: left;
+  border: 1px solid #444;
+  border-radius: 8px;
+  padding: 16px;
+  margin-top: 16px;
+}
+
+.result-card h3 {
+  margin-top: 0;
+}
+
+.code-snippet {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  background: #242424;
+  padding: 12px;
+  border-radius: 6px;
+}
+

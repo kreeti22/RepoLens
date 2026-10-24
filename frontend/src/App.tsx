@@ -1,13 +1,10 @@
-
+import "./App.css";
 import { useState } from "react";
+import SearchResultCard from "./components/SearchResultCard";
+import type { SearchResult } from "./types/search";
 
-interface SearchResult {
-  path: string;
-  owner: string;
-  name: string;
-  snippet: string;
-  score: number;
-}
+
+
 
 interface SearchResponse {
   results: SearchResult[];
@@ -78,14 +75,11 @@ function App() {
       )}
 
       {results.map((result) => (
-        <div key={`${result.owner}/${result.name}/${result.path}`}>
-          <h3>{result.path}</h3>
-          <p>{result.owner}/{result.name}</p>
-          <pre style={{ whiteSpace: "pre-wrap" }}>
-            {result.snippet}
-          </pre>
-        </div>
-      ))}
+  <SearchResultCard
+    key={`${result.owner}/${result.name}/${result.path}`}
+    result={result}
+  />
+))}
     </div>
   );
 }
