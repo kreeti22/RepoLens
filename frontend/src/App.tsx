@@ -16,9 +16,18 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [searched, setSearched] = useState(false);
+  const [owner, setOwner] = useState("");
+  const [repoName, setRepoName] = useState("");
 
   async function handleSearch() {
     const searchTerm = query.trim();
+    const selectedOwner = owner.trim();
+    const selectedRepo = repoName.trim();
+
+    if (Boolean(selectedOwner) !== Boolean(selectedRepo)) {
+  setError("Enter both repository owner and name.");
+  return;
+}
 
     if (!searchTerm) {
       setError("Please enter a search keyword.");
@@ -30,9 +39,18 @@ function App() {
     setSearched(false);
 
     try {
-      const response = await fetch(
-        `/search?q=${encodeURIComponent(searchTerm)}`
-      );
+      
+const params = new URLSearchParams({
+  q: searchTerm
+});
+
+if (selectedOwner && selectedRepo) {
+  params.set("owner", selectedOwner);
+  params.set("name", selectedRepo);
+}
+
+const response = await fetch(`/search?${params.toString()}`);
+
 
       if (!response.ok) {
         throw new Error(`Search failed: ${response.status}`);
@@ -56,6 +74,21 @@ function App() {
     <div>
       <h1>RepoLens</h1>
       <p>Search code across GitHub repositories.</p>
+
+      
+  <input
+    type="text"
+    placeholder="GitHub owner (optional)"
+    value={owner}
+    onChange={(event) => setOwner(event.target.value)}
+  />
+
+  <input
+    type="text"
+    placeholder="Repository name (optional)"
+    value={repoName}
+    onChange={(event) => setRepoName(event.target.value)}
+  />
 
       <input
         type="text"
