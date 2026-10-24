@@ -204,3 +204,19 @@
   border-radius: 6px;
 }
 
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.pagination button {
+  padding: 8px 16px;
+}
+
+.pagination span {
+  font-weight: 600;
+}

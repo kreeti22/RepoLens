@@ -18,9 +18,9 @@ function App() {
   const [searched, setSearched] = useState(false);
   const [owner, setOwner] = useState("");
   const [repoName, setRepoName] = useState("");
+  const [page, setPage] = useState(1);
 
-  async function handleSearch() {
-    const searchTerm = query.trim();
+async function handleSearch(pageToLoad: number = 1) {    const searchTerm = query.trim();
     const selectedOwner = owner.trim();
     const selectedRepo = repoName.trim();
 
@@ -41,7 +41,8 @@ function App() {
     try {
       
 const params = new URLSearchParams({
-  q: searchTerm
+  q: searchTerm,
+  page: String(pageToLoad)
 });
 
 if (selectedOwner && selectedRepo) {
@@ -59,6 +60,7 @@ const response = await fetch(`/search?${params.toString()}`);
       const data = (await response.json()) as SearchResponse;
 
       setResults(data.results);
+      setPage(pageToLoad);
       setSearched(true);
     } catch (error) {
       setResults([]);
@@ -97,7 +99,7 @@ const response = await fetch(`/search?${params.toString()}`);
         onChange={(event) => setQuery(event.target.value)}
       />
 
-      <button onClick={handleSearch} disabled={loading}>
+      <button onClick={() => handleSearch(1)} disabled={loading}>
         {loading ? "Searching..." : "Search"}
       </button>
 
@@ -113,6 +115,28 @@ const response = await fetch(`/search?${params.toString()}`);
     result={result}
   />
 ))}
+
+  
+{searched && (page > 1 || results.length === 10) && (
+  <div className="pagination">
+    <button
+      onClick={() => handleSearch(page - 1)}
+      disabled={page === 1 || loading}
+    >
+      Previous
+    </button>
+
+    <span>Page {page}</span>
+
+    <button
+      onClick={() => handleSearch(page + 1)}
+      disabled={results.length < 10 || loading}
+    >
+      Next
+    </button>
+  </div>
+)}
+
     </div>
   );
 }
