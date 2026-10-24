@@ -2,7 +2,7 @@ import "./App.css";
 import { useState } from "react";
 import SearchResultCard from "./components/SearchResultCard";
 import type { SearchResult } from "./types/search";
-
+import RepositoryImport from "./components/RepositoryImport";
 
 
 
@@ -76,6 +76,8 @@ const response = await fetch(`/search?${params.toString()}`);
     <div>
       <h1>RepoLens</h1>
       <p>Search code across GitHub repositories.</p>
+
+       <RepositoryImport />
 
       
   <input

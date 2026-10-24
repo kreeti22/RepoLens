@@ -220,3 +220,20 @@
 .pagination span {
   font-weight: 600;
 }
+
+
+.import-section {
+  border: 1px solid #444;
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 28px;
+}
+
+.import-section input {
+  margin: 6px;
+  padding: 10px;
+}
+
+.import-section button {
+  padding: 10px 16px;
+}

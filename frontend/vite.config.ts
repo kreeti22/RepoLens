@@ -7,7 +7,8 @@ export default defineConfig({
 
   server: {
     proxy: {
-      "/search": "http://localhost:3001"
+      "/search": "http://localhost:3001",
+      "/github": "http://localhost:3001"
     }
   }
 });
