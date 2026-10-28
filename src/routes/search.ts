@@ -40,6 +40,13 @@ const offset = (page - 1) * PAGE_SIZE;
         message: "Search query is required"
       });
     }
+    const MAX_QUERY_LENGTH = 100;
+
+if (query.length > MAX_QUERY_LENGTH) {
+  return reply.code(400).send({
+    message: "Search query must be 100 characters or fewer"
+  });
+}
 
     const hasOwner = request.query.owner !== undefined;
     const hasName = request.query.name !== undefined;
