@@ -8,17 +8,28 @@ interface SearchResultCardProps {
 function SearchResultCard({ result }: SearchResultCardProps) {
   return (
     <article className="result-card">
-      <h3>{result.path}</h3>
+      <div className="result-header">
+        <div className="result-info">
+          <h3 className="result-file">
+            <span aria-hidden="true">▤</span>
+            {result.path}
+          </h3>
 
-      <p>
-        {result.owner}/{result.name}
-      </p>
+          <p className="result-repository">
+            {result.owner} / {result.name}
+          </p>
+        </div>
 
-      <pre className="code-snippet">
-        {result.snippet}
-      </pre>
+        <span className="result-score">
+          Relevance {result.score.toFixed(3)}
+        </span>
+      </div>
 
-      <small>Relevance: {result.score.toFixed(3)}</small>
+      <div className="result-code">
+        <pre>
+          <code>{result.snippet}</code>
+        </pre>
+      </div>
     </article>
   );
 }
