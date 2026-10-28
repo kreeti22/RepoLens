@@ -3,8 +3,8 @@ import { useState } from "react";
 import SearchResultCard from "./components/SearchResultCard";
 import type { SearchResult } from "./types/search";
 import RepositoryImport from "./components/RepositoryImport";
-
-
+import ShapeWaves from "./components/ShapeWaves";
+import SiteHeader from "./components/SiteHeader";
 
 interface SearchResponse {
   results: SearchResult[];
@@ -74,10 +74,37 @@ const response = await fetch(`/search?${params.toString()}`);
 
   return (
     <div>
-      <h1>RepoLens</h1>
-      <p>Search code across GitHub repositories.</p>
+      <SiteHeader />
 
-       <RepositoryImport />
+      <section id="top" className="hero-section">
+  <h1 className="visually-hidden">RepoLens</h1>
+
+  <p>Search code across GitHub repositories.</p>
+
+  <a href="#import" className="explore-link">
+    Explore repositories ↓
+  </a>
+</section>
+
+<section id="import" className="page-section glass-panel">
+  <RepositoryImport />
+</section>
+
+    <div className="animated-background">
+  <ShapeWaves
+    text="RepoLens"
+    color="#598071"
+    hoverColor="#114e41"
+    backgroundColor="#02332b"
+    shapes="mixed"
+    interactive={true}
+    glow={0.35}
+  />
+</div>
+
+  <section id="search" className="page-section glass-panel">
+  <h2>Search source code</h2>
+  <div className="search-controls">
 
       
   <input
@@ -101,9 +128,12 @@ const response = await fetch(`/search?${params.toString()}`);
         onChange={(event) => setQuery(event.target.value)}
       />
 
+      
+
       <button onClick={() => handleSearch(1)} disabled={loading}>
         {loading ? "Searching..." : "Search"}
       </button>
+      </div>
 
       {error && <p>{error}</p>}
 
@@ -138,6 +168,8 @@ const response = await fetch(`/search?${params.toString()}`);
     </button>
   </div>
 )}
+    </section>
+
 
     </div>
   );
