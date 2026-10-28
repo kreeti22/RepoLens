@@ -1,5 +1,5 @@
 import "./App.css";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import SearchResultCard from "./components/SearchResultCard";
 import type { SearchResult } from "./types/search";
 import RepositoryImport from "./components/RepositoryImport";
@@ -20,6 +20,7 @@ function App() {
   const [owner, setOwner] = useState("");
   const [repoName, setRepoName] = useState("");
   const [page, setPage] = useState(1);
+  const searchController = useRef<AbortController | null>(null);
 
 async function handleSearch(pageToLoad: number = 1) {    const searchTerm = query.trim();
     const selectedOwner = owner.trim();
@@ -35,9 +36,14 @@ async function handleSearch(pageToLoad: number = 1) {    const searchTerm = quer
       return;
     }
 
+    searchController.current?.abort();
+
+const controller = new AbortController();
+searchController.current = controller;
     setLoading(true);
     setError("");
     setSearched(false);
+    setResults([]);
 
     try {
       
@@ -51,8 +57,10 @@ if (selectedOwner && selectedRepo) {
   params.set("name", selectedRepo);
 }
 
-const response = await fetch(`/search?${params.toString()}`);
-
+const response = await fetch(
+  `/search?${params.toString()}`,
+  { signal: controller.signal }
+);
 
       if (!response.ok) {
   throw new Error(await getApiError(response));
@@ -62,15 +70,25 @@ const response = await fetch(`/search?${params.toString()}`);
       setResults(data.results);
       setPage(pageToLoad);
       setSearched(true);
-    } catch (error) {
-      setResults([]);
-      setError(
-        error instanceof Error ? error.message : "Something went wrong"
-      );
-    } finally {
-      setLoading(false);
-    }
+    
+} catch (error) {
+  if (controller.signal.aborted) {
+    return;
   }
+
+  setResults([]);
+  setError(
+    error instanceof Error
+      ? error.message
+      : "Something went wrong"
+  );
+} finally {
+  if (searchController.current === controller) {
+    searchController.current = null;
+    setLoading(false);
+  }
+}
+}
 
   return (
     <div>
@@ -133,8 +151,8 @@ const response = await fetch(`/search?${params.toString()}`);
 
       
 
-      <button onClick={() => handleSearch(1)} disabled={loading}>
-        {loading ? "Searching..." : "Search"}
+<button onClick={() => void handleSearch(1)}>
+          {loading ? "Searching..." : "Search"}
       </button>
       </div>
 
