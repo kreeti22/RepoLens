@@ -1,5 +1,6 @@
 
 import { useState } from "react";
+import { getApiError } from "../utils/api";
 
 interface ImportResponse {
   repository: string;
@@ -51,8 +52,8 @@ function RepositoryImport() {
       });
 
       if (!response.ok) {
-        throw new Error(`Import failed: HTTP ${response.status}`);
-      }
+  throw new Error(await getApiError(response));
+}
 
       const data = (await response.json()) as ImportResponse;
 

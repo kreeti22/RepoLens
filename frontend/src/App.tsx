@@ -5,6 +5,7 @@ import type { SearchResult } from "./types/search";
 import RepositoryImport from "./components/RepositoryImport";
 import ShapeWaves from "./components/ShapeWaves";
 import SiteHeader from "./components/SiteHeader";
+import { getApiError } from "./utils/api";
 
 interface SearchResponse {
   results: SearchResult[];
@@ -54,9 +55,8 @@ const response = await fetch(`/search?${params.toString()}`);
 
 
       if (!response.ok) {
-        throw new Error(`Search failed: ${response.status}`);
-      }
-
+  throw new Error(await getApiError(response));
+}
       const data = (await response.json()) as SearchResponse;
 
       setResults(data.results);
