@@ -108,6 +108,7 @@ const response = await fetch(`/search?${params.toString()}`);
 
       
   <input
+    aria-label="GitHub owner"
     type="text"
     placeholder="GitHub owner (optional)"
     value={owner}
@@ -115,6 +116,7 @@ const response = await fetch(`/search?${params.toString()}`);
   />
 
   <input
+    aria-label="Repository name"
     type="text"
     placeholder="Repository name (optional)"
     value={repoName}
@@ -122,6 +124,7 @@ const response = await fetch(`/search?${params.toString()}`);
   />
 
       <input
+        aria-label="Search source code"
         type="text"
         placeholder="Search source code..."
         value={query}
