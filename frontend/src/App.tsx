@@ -22,6 +22,17 @@ function App() {
   const [page, setPage] = useState(1);
   const searchController = useRef<AbortController | null>(null);
 
+  function resetSearch() {
+  searchController.current?.abort();
+  searchController.current = null;
+
+  setResults([]);
+  setPage(1);
+  setSearched(false);
+  setError("");
+  setLoading(false);
+}
+
 async function handleSearch(pageToLoad: number = 1) {    const searchTerm = query.trim();
     const selectedOwner = owner.trim();
     const selectedRepo = repoName.trim();
@@ -41,9 +52,12 @@ async function handleSearch(pageToLoad: number = 1) {    const searchTerm = quer
 const controller = new AbortController();
 searchController.current = controller;
     setLoading(true);
-    setError("");
-    setSearched(false);
-    setResults([]);
+setError("");
+setSearched(false);
+
+if (pageToLoad === 1) {
+  setResults([]);
+}
 
     try {
       
@@ -67,9 +81,19 @@ const response = await fetch(
 }
       const data = (await response.json()) as SearchResponse;
 
-      setResults(data.results);
-      setPage(pageToLoad);
-      setSearched(true);
+if (controller.signal.aborted) {
+  return;
+}
+
+if (pageToLoad > 1 && data.results.length === 0) {
+  setError("No more results available.");
+  setSearched(true);
+  return;
+}
+
+setResults(data.results);
+setPage(pageToLoad);
+setSearched(true);
     
 } catch (error) {
   if (controller.signal.aborted) {
@@ -130,24 +154,30 @@ const response = await fetch(
     type="text"
     placeholder="GitHub owner (optional)"
     value={owner}
-    onChange={(event) => setOwner(event.target.value)}
-  />
+onChange={(event) => {
+  setOwner(event.target.value);
+  resetSearch();
+}}  />
 
   <input
     aria-label="Repository name"
     type="text"
     placeholder="Repository name (optional)"
     value={repoName}
-    onChange={(event) => setRepoName(event.target.value)}
-  />
+onChange={(event) => {
+  setRepoName(event.target.value);
+  resetSearch();
+}}  />
 
       <input
         aria-label="Search source code"
         type="text"
         placeholder="Search source code..."
         value={query}
-        onChange={(event) => setQuery(event.target.value)}
-      />
+onChange={(event) => {
+  setQuery(event.target.value);
+  resetSearch();
+}}      />
 
       
 
