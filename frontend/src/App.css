@@ -625,3 +625,66 @@ html {
   }
 }
 
+
+/* Repository import progress */
+
+.import-progress {
+  flex-basis: 100%;
+  width: 100%;
+  margin-top: 20px;
+  padding: 20px;
+
+  background: rgba(5, 24, 19, 0.85);
+  border: 1px solid rgba(99, 194, 143, 0.3);
+  border-radius: 12px;
+}
+
+.import-progress h3 {
+  margin: 0 0 12px;
+  color: #a1f2c7;
+  overflow-wrap: anywhere;
+}
+
+.import-progress p {
+  margin: 10px 0;
+}
+
+.import-progress progress {
+  width: 100%;
+  height: 12px;
+  accent-color: #36cb91;
+}
+
+.import-progress button {
+  margin-top: 12px;
+}
+
+
+/* Import failure and retry UI */
+
+.import-error {
+  flex-basis: 100%;
+  width: 100%;
+  margin-top: 16px;
+  padding: 20px;
+
+  background: rgba(75, 32, 25, 0.45);
+  border: 1px solid rgba(236, 134, 107, 0.45);
+  border-radius: 12px;
+}
+
+.import-error p {
+  color: #ffd5c7;
+  margin: 0 0 12px;
+}
+
+.import-error button {
+  margin-top: 8px;
+  background: #334a40;
+  border: 1px solid #8dbba2;
+}
+
+.import-error button:hover:not(:disabled) {
+  background: #456657;
+}
+

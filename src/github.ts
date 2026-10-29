@@ -1,3 +1,5 @@
+import { githubRequest } from "./utils/github-request.js";
+
 export interface GitHubRepository {
   name: string;
   full_name: string;
@@ -13,10 +15,10 @@ export async function getGitHubRepository(
   owner: string,
   name: string
 ): Promise<GitHubRepository> {
+  validateRepository(owner, name);
   const url = `https://api.github.com/repos/${owner}/${name}`;
 
-  const response = await fetch(url);
-
+const response = await githubRequest(url);
   if (!response.ok) {
   if (response.status === 404) {
     throw new Error("GitHub repository not found");
@@ -56,8 +58,7 @@ export async function getGitHubFiles(
 ): Promise<GitHubTreeEntry[]> {
   const url = `https://api.github.com/repos/${owner}/${name}/git/trees/${encodeURIComponent(branch)}?recursive=1`;
 
-  const response = await fetch(url);
-
+const response = await githubRequest(url);
   if (!response.ok) {
     throw new Error(`GitHub tree request failed: ${response.status}`);
   }
@@ -76,6 +77,24 @@ interface GitHubBlobResponse {
   encoding: string;
 }
 
+export function validateRepository(
+  owner: string,
+  name: string
+): void {
+  const validOwner =
+    /^[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,38})$/.test(owner) &&
+    !owner.endsWith("-");
+
+  const validName =
+    /^[a-zA-Z0-9._-]{1,100}$/.test(name) &&
+    name !== "." &&
+    name !== "..";
+
+  if (!validOwner || !validName) {
+    throw new Error("Invalid GitHub repository details");
+  }
+}
+
 export async function getGitHubFileContent(
   owner: string,
   name: string,
@@ -83,8 +102,7 @@ export async function getGitHubFileContent(
 ): Promise<string> {
   const url = `https://api.github.com/repos/${owner}/${name}/git/blobs/${sha}`;
 
-  const response = await fetch(url);
-
+const response = await githubRequest(url);
   if (!response.ok) {
     throw new Error(`GitHub blob request failed: ${response.status}`);
   }
