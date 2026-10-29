@@ -72,12 +72,6 @@ const importInProgress = useRef(false);
 }
   }
 
-  function resetProgress() {
-    setResult(null);
-    setFailedBatch(null);
-    setError("");
-  }
-
   const hasNextBatch =
     result !== null &&
     result.batch < result.totalBatches;
