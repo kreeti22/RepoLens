@@ -40,3 +40,4 @@ describe("GitHub API error handling", () => {
     ).rejects.toThrow("GitHub repository not found");
   });
 });
+
