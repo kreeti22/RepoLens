@@ -25,3 +25,14 @@ Explain how to run automated tests and coverage.
 ## Engineering Highlights
 
 PostgreSQL full-text search, GIN indexing, batched imports, API error handling and automated testing.
+
+## Screenshots
+
+### Homepage
+![RepoLens Homepage](docs/screenshots/homepage.png)
+
+### Repository Import
+![Repository Import](docs/screenshots/repository-import.png)
+
+### Code Search
+![Code Search Results](docs/screenshots/code-search.png)
